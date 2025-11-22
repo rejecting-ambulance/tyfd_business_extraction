@@ -65,10 +65,9 @@ def extract_pdf_text(pdf_path, config):
         "檔名": os.path.basename(pdf_path),
         "收文流水號": serial_number,
         "發文字號": dispatch_number,
-        "8碼編號": unified_ids_result,
+        "統一編號": unified_ids_result,
         "場所名稱": original,
         "場所地址": "桃園市",
-        "查詢編號": "",
         "備註": subject
     }
 
