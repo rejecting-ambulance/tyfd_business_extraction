@@ -1,3 +1,6 @@
 *.xlsx
+*.exe
+
 
 test_file/
+test_file_grouped/
