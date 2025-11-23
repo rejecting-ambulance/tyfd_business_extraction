@@ -178,6 +178,66 @@ def extract_cram_school_info(pdf_path):
     }
 
 
+def extract_kindergarten_info(pdf_path):
+    """
+    從文件文字中解析：幼兒園班名、班址
+    並處理跨行地址、全形括號、中文標點
+    """
+
+    extracted_text = pdf_to_text(pdf_path)  # 使用 fitz 處理，確保文本完整提取
+
+    # 先把換行符號移除，避免地址被切斷
+    cleaned = extracted_text.replace("\n", "").replace("\r", "")
+    
+    # ---- 正規表示式 ----
+    name_pattern = r"私立[\u4e00-\u9fff\d\w]+幼兒園(?:[\u4e00-\u9fff\d\w]*分班)?"
+
+    # 地址解析：班址~，桃園市開頭
+    addr_pattern = r"(?:園址|班址)[:：]\s*(桃園市[^\n\)）。,]*[^\s\)）。,]*(?:號[^\s\)）。,]*)?)[\)）。,。]"
+
+
+
+    # ---- 搜尋 ----
+    name_match = re.search(name_pattern, cleaned)
+    addr_match = re.search(addr_pattern, cleaned)
+
+    name = name_match.group(0).strip() if name_match else None
+    name = f'桃園市{name}' if name else None
+    address = addr_match.group(1).strip() if addr_match else None
+
+
+    # 共通提取內容
+    dispatch_number_pattern = r"發文字號：([^\n]+)"
+    serial_number_pattern = r"(1I\d{10,11})"
+    subject_pattern = r"主旨：(.*?。)"  # 提取主旨內容，支持跨行，直到句點
+    original_pattern = r"正本：([^\n]+)"
+
+    # 提取內容
+    dispatch_number_match = re.search(dispatch_number_pattern, extracted_text)
+    serial_number_match = re.search(serial_number_pattern, extracted_text)
+    subject_match = re.search(subject_pattern, extracted_text, re.DOTALL)
+    original_match = re.search(original_pattern, extracted_text)
+
+    # 賦值內容
+    dispatch_number = dispatch_number_match.group(1).strip() if dispatch_number_match else "未匹配"
+    serial_number = serial_number_match.group(1).strip() if serial_number_match else "未匹配"
+    subject = subject_match.group(1).strip().replace("\n", "") if subject_match else "未匹配"
+    original = original_match.group(1).strip() if original_match else "未匹配"
+
+    if "幼兒園" in original:
+        name = original
+    
+    return {
+        "檔名": os.path.basename(pdf_path),
+        "收文流水號": serial_number,
+        "發文字號": dispatch_number,
+        "統一編號": "無",
+        "場所名稱": name,
+        "場所地址": address,
+        "備註": subject
+    }
+
+
 # 定義函數：處理資料夾內的所有 PDF 並輸出到 Excel
 def process_folder(folder_path, output_excel, config):
     # 搜索資料夾內的所有 PDF 文件
@@ -201,6 +261,9 @@ def process_folder(folder_path, output_excel, config):
         elif "補習班" in first_text:
             print(f"▶ {os.path.basename(pdf_file)} → 補習班")
             data = extract_cram_school_info(pdf_file)        
+        elif "幼兒園" in first_text:
+            print(f"▶ {os.path.basename(pdf_file)} → 幼兒園")
+            data = extract_kindergarten_info(pdf_file)        
         else:
             print(f"▶ {os.path.basename(pdf_file)} → (分)公司及商業")
             data = extract_business_info(pdf_file, config)
