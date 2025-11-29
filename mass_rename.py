@@ -3,8 +3,8 @@ import os
 import shutil
 
 # 1. 設定 Excel 路徑和 PDF 資料夾路徑
-excel_path = r"C:\Users\zhand\Downloads\code\廠登處理發布版\Please.xlsx"
-pdf_folder_path = r"C:\Users\zhand\Downloads\code\廠登處理發布版\split_pdf"
+excel_path = r"C:\Users\zhand\OneDrive\Desktop\11月商登\Please.xlsx"
+pdf_folder_path = r"C:\Users\zhand\OneDrive\Desktop\11月商登\merged_files"
 
 # 嘗試讀取 Excel 檔案並列出所有欄位名稱
 try:
