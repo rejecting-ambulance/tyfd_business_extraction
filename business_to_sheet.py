@@ -836,15 +836,15 @@ def extract_hostel_info(pdf_path):
     cleaned = extracted_text.replace("\n", "").replace("\r", "")
     
     # ---- 正規表示式 ----
-    addr_pattern = r"地址[:：]\s*([^\s:：()（）]+)"
+    addr_pattern = r"地址[:：]\s*([^\s:：()（）。]+)"
 
     # ---- 搜尋 ----
-    addr_match = re.search(addr_pattern, cleaned)
+    addr_match = re.findall(addr_pattern, cleaned)
 
     # ---- 處理地址 ----
-    address = None
+    address = "未匹配"
     if addr_match:
-        address = addr_match.group(1).strip()
+        address = addr_match[-1].strip()     # 取最後一個結果
 
     # 共通提取內容
     dispatch_number_pattern = r"發文字號：([^\n]+)"
