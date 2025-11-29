@@ -565,7 +565,7 @@ def extract_branch_info(pdf_path, config):
     branch_match = re.search(branch_pattern, normalized_text)
     branch_name = branch_match.group(1).strip() if branch_match else "未匹配"
     
-    addr_pattern = r"(?:公司所在地|公司地址|新地址)[^桃]*?(桃園市[^\n\)）。,，;；]*)(?:[\)）。,，;；]|$)"
+    addr_pattern = r"(?:分公司所在地|分公司地址|新地址)[^桃]*?(桃園市[^\n\)）。,，;；]*)(?:[\)）。,，;；]|$)"
 
     addr_match = re.findall(addr_pattern, normalized_text)
     #address = addr_match.group(1).strip() if addr_match else None
